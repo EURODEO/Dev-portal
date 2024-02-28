@@ -59,6 +59,24 @@ public class ApisixRestClient {
         }
     }
 
+    public void deleteConsumer(String username) throws JSONException{
+
+        RestTemplate restTemplate = new RestTemplate();
+
+//        ObjectMapper mapper = new ObjectMapper();
+//        String str = mapper.writeValueAsString(createConsumerObject(username));
+//        JSONObject jsonObject = new JSONObject(str);
+
+
+        HttpEntity<String> request = new HttpEntity<String>(generateHeaders());
+
+        try {
+            HttpEntity<String> response = restTemplate.exchange(consumersUrl + "/"+username, HttpMethod.DELETE, request, String.class);
+        } catch (RestClientException e) {
+            throw e;
+        }
+    }
+
     public List<String> getRoutes() {
         HttpEntity<String> request = new HttpEntity<String>( generateHeaders());
         RestTemplate restTemplate = new RestTemplate();

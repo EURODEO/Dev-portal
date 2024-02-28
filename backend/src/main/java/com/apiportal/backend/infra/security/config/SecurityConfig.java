@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -41,7 +42,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .csrf().disable()
-                .cors()
+                .cors().configurationSource(corsConfigurationSource())
                 .and()
                 .exceptionHandling()
                 .accessDeniedHandler(accessDeniedHandler())
@@ -62,6 +63,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         source.registerCorsConfiguration("/**", config.applyPermitDefaultValues());
         //allow Authorization to be exposed
         config.setExposedHeaders(Arrays.asList("Authorization"));
+        config.addAllowedMethod(HttpMethod.OPTIONS);
+        config.addAllowedMethod(HttpMethod.PUT);
 
         return source;
     }

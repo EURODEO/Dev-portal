@@ -24,6 +24,7 @@ let initOptions = {
 let kc = new Keycloak(initOptions);
 let routes = [];
 let apiKey ='';
+let userName = '';
 
 kc.init({
   onLoad: initOptions.onLoad,
@@ -53,16 +54,30 @@ function App() {
 
   const  handleApiCall = async (token) => {
     try {
-      debugger
       const response = await keyApi.getApiKey(token);
       debugger
       apiKey = response.data.apiKey;
       routes = response.data.routes;
+      userName = response.data.userName;
       return apiKey;
 
    
     } catch (error) {
       
+    } finally {
+      
+    }
+  }
+
+  const  handleUserDelete = async (token, userName) => {
+    try {
+      debugger
+      const response = await keyApi.deleteUser(token,userName);
+      debugger
+
+   
+    } catch (error) {
+      debugger
     } finally {
       
     }
@@ -101,10 +116,11 @@ function App() {
           <Button onClick={() => { kc.login() }} className='m-1' label='Login' severity="success" />
           <Button onClick={() => { handleApiCall(kc.token).then(response => {setInfoMessage('ApiKey: ' +response)}, (e)=>{setInfoMessage('Are you logged in?')}) }} className='m-1' label='Get ApiKey' severity="success" />
           <Button onClick={() => { handleRoutes(routes) }} className="m-1" label='Show routes' severity="info" />
+          <Button onClick={() => { handleUserDelete(kc.token, userName) }} className="m-1" label='Delete user' severity="danger" />
           {/*<Button onClick={() => { setInfoMessage('test' + routes) }} className="m-1" label='Show routes' severity="info" /> */}
           <Button onClick={() => { setInfoMessage(JSON.stringify(kc.tokenParsed)) }} className="m-1" label='Show Parsed Access token' severity="info" />
           <Button onClick={() => { setInfoMessage(kc.isTokenExpired(5).toString()) }} className="m-1" label='Check Token expired' severity="warning" />
-          <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token (if about to expire)' />  {/** 10 seconds */}
+          <Button onClick={() => { kc.updateToken(10).then((refreshed)=>{ setInfoMessage('Token Refreshed: ' + refreshed.toString()) }, (e)=>{setInfoMessage('Refresh Error')}) }} className="m-1" label='Update Token' />  {/** 10 seconds */}
           <Button onClick={() => { kc.logout({ redirectUri: process.env.REACT_APP_LOGOUT_URL }) }} className="m-1" label='Logout' severity="danger" />
           
         </div>

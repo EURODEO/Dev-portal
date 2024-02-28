@@ -1,13 +1,10 @@
 package com.apiportal.backend.controller;
 
-import com.apiportal.backend.models.MessageObject;
-import com.apiportal.backend.models.ServerStatus;
-import com.apiportal.backend.models.VaultApiInfo;
+import com.apiportal.backend.models.*;
 import com.apiportal.backend.service.VaultService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.apiportal.backend.apisix.ApisixRestClient;
 import com.apiportal.backend.infra.security.annotation.AllowedRoles;
-import com.apiportal.backend.models.User;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -32,6 +31,7 @@ public class ApikeyController {
     @Autowired
     ApisixRestClient apisixRestClient;
 
+
     public ApikeyController() {
 
     }
@@ -44,6 +44,8 @@ public class ApikeyController {
 
         //get user name we use this as id to save to vault and apisix
         String userName = sc.getAuthentication().getName();
+
+        String userId = sc.getAuthentication().getDetails().toString();
 
         //check if servers are online and if user exists
         ServerStatus serverStatus = checkVaultAndApisix(userName);
@@ -89,6 +91,46 @@ public class ApikeyController {
         return  ResponseEntity.status(HttpStatus.OK).body(createdUser);
     }
 
+    @PutMapping("/deleteuser")
+    @AllowedRoles("ADMIN")
+    public ResponseEntity deleteUser(@RequestBody UserDTO userName){
+
+        //check if servers are online and if user exists
+        ServerStatus serverStatus = checkVaultAndApisix(userName.getUserName());
+
+        //if vault or apisix is offline we should not try to delete user information
+        if (!serverStatus.isApisixOnline() || !serverStatus.isVaultOnline()) {
+            if (!serverStatus.isApisixOnline()) {
+                return ResponseEntity
+                        .status(HttpStatus.SERVICE_UNAVAILABLE)
+                        .body(new MessageObject("Apisix server error"));
+            }
+            else if (!serverStatus.isVaultOnline()) {
+                return ResponseEntity
+                        .status(HttpStatus.SERVICE_UNAVAILABLE)
+                        .body(new MessageObject("Vault server error"));
+            }
+
+        }
+
+        //both servers seem to be online lets delete key if user is allready saved
+//        String savedApikey = null;
+//        User createdUser = new User();
+//        createdUser.setUserName(userName);
+
+        if (serverStatus.isApisixUserFound()) {
+            //delete user from apisix
+            deleteApisixUser(userName.getUserName());
+        }
+
+        if (serverStatus.isVaultUserFound()) {
+            vaultService.deleteUserFromVault(userName.getUserName());
+
+        }
+
+        return  ResponseEntity.status(HttpStatus.OK).body("ok");
+    }
+
 
 
     private List<String> getRoutes() {
@@ -105,6 +147,14 @@ public class ApikeyController {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void deleteApisixUser(String userName) {
+        try {
+            apisixRestClient.deleteConsumer(userName);
+        } catch (JSONException e) {
             throw new RuntimeException(e);
         }
     }

@@ -2,11 +2,11 @@ import axios from "axios"
 import { toast } from 'react-toastify';
 
 export const keyApi = {
-    getApiKey
+    getApiKey,
+    deleteUser
   }
   
   function getApiKey(token) {
-    debugger
     return instance.get('/getapikey', {
       headers: { 'Authorization': bearerAuth(token)}
     }).catch(err => { debugger 
@@ -16,6 +16,15 @@ export const keyApi = {
     // instance.get('/getapikey', { headers: { 'Authorization': bearerAuth(token)}})
     // .then((response) => {return response.data})
     // .catch((error) => {return error})
+  }
+
+  function deleteUser(token, userName) {
+    debugger
+    return instance.put('/deleteuser',{userName:userName},{
+      headers: { 'Authorization': bearerAuth(token),"Access-Control-Allow-Origin": "*"}
+    }).catch(err => { debugger 
+      handleError(err);
+      });
   }
   
   // -- Axios

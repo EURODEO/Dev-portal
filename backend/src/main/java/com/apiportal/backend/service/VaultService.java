@@ -51,6 +51,26 @@ public class VaultService {
         return generatedApiKey;
     }
 
+    public void deleteUserFromVault(String userName) {
+        //String generatedApiKey = apiKeyService.generateMD5Hashvalue(userName);
+        VaultOperations operations = vaultTemplate;
+        operations.delete(vaultPath + userName);
+//        VaultKeyValueOperations keyValueOperations = operations.opsForKeyValue(vaultPath,
+//                VaultKeyValueOperationsSupport.KeyValueBackend.unversioned());
+//
+//        Map vaultValues = new HashMap<>();
+//        vaultValues.put(keyName,generatedApiKey);
+//        vaultValues.put("date",getDate());
+//
+//        try {
+//            keyValueOperations.put(userName, vaultValues);
+//        } catch (Exception e) {
+//            System.out.println("vault error " +e);
+//            throw e;
+//        }
+//        return generatedApiKey;
+    }
+
     public VaultResponse getUserinfoFromVault(String username) {
         VaultOperations operations = vaultTemplate;
 

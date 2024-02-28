@@ -35,6 +35,13 @@ public record AccessToken(String value) {
                 .collect(Collectors.toList());
     }
 
+    public String getUserId() {
+        JsonObject payloadAsJson = getPayloadAsJsonObject();
+        return Optional.ofNullable(
+                        payloadAsJson.get("sub").getAsString())
+                .orElse("");
+    }
+
     public String getUsername() {
         JsonObject payloadAsJson = getPayloadAsJsonObject();
 
