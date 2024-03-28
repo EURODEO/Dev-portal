@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### PYTHON ###
+__pycache__/
+.mypy_cache/
+.pytest_cache/
+
+### ENV ###
+*config.yaml

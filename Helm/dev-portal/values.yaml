@@ -15,16 +15,14 @@ backend:
     type: ClusterIP
     port: 80
     debugport: 5005
-  args: ["--spring.profiles.active=ewc-dev"]
-  vault_url: "vault.vault.svc.cluster.local"
-  vault_port: 8200
+  vault_url: "http://vault.vault.svc.cluster.local:8200"
   vault_token: ""
   vault_path: apisix-dev/consumers/ewc
+  vault_phase: "geeks" # This one might need to be empty string as well
   apisix_admin_url: "http://apisix-admin.apisix.svc.cluster.local:9180"
   apisix_gateway_url: "https://apisixdev.eumetnet-femdi.eumetsat.ewcloud.host"
   apisix_apikey: ""
   apisix_keypath: $secret://vault/dev/
-  apisix_keyname: key-auth
   keycloak_cluster_url: http://keycloack-keycloak.keycloack.svc.cluster.local
 
 frontend:

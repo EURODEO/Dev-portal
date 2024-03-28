@@ -2,11 +2,11 @@ import axios from "axios"
 import { toast } from 'react-toastify';
 
 export const keyApi = {
-    getApiKey
+    getApiKey,
+    deleteApiKey
   }
   
   function getApiKey(token) {
-    debugger
     return instance.get('/getapikey', {
       headers: { 'Authorization': bearerAuth(token)}
     }).catch(err => { debugger 
@@ -18,6 +18,15 @@ export const keyApi = {
     // .catch((error) => {return error})
   }
   
+  function deleteApiKey(token) {
+    debugger
+    return instance.delete('/apikey',{
+      headers: { 'Authorization': bearerAuth(token),"Access-Control-Allow-Origin": "*"}
+    }).catch(err => { debugger 
+      handleError(err);
+      });
+  }
+
   // -- Axios
   const instance = axios.create({
     //baseURL: config.url.API_BASE_URL,

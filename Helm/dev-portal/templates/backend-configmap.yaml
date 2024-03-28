@@ -4,33 +4,24 @@ metadata:
   name: backend-config
   namespace: {{ .Release.Namespace }}
 data:
-  application-ewc-dev.yaml: |
+  config.yaml: |
     server:
+      host: {{ .Values.ingress.host }} 
       port: {{ .Values.backend.containerport }}
+      log_level: INFO
 
     keycloak:
       url: {{ .Values.backend.keycloak_cluster_url }}
       realm: {{ .Values.keycloak_realm }}
 
     vault:
-      endpoint: {{ .Values.backend.vault_url }}
-      scheme: http
-      port: {{ .Values.backend.vault_port }}
+      url: {{ .Values.backend.vault_url }}
       token: {{ .Values.backend.vault_token }}
-      path: {{ .Values.backend.vault_path }}
+      base_path: {{ .Values.backend.vault_path }}
+      secret_phase: {{ .Values.backend.vault_phase }}
 
     apisix:
-      #baseUrl: http://apisix:9180 #this is for docker
-      adminUrl: {{ .Values.backend.apisix_admin_url }}
-      gatewayUrl: {{ .Values.backend.apisix_gateway_url }} 
-      consumersUrl: ${apisix.adminUrl}/apisix/admin/consumers
-      routesUrl: ${apisix.adminUrl}/apisix/admin/routes
-      adminApiKey: {{ .Values.backend.apisix_apikey }}
-      keyPath: {{ .Values.backend.apisix_keypath }}
-      keyName: {{ .Values.backend.apisix_keyname }}
-
-
-    management:
-      metrics:
-        tags:
-          application: devportal-backend
+      admin_url: {{ .Values.backend.apisix_admin_url }}
+      gateway_url: {{ .Values.backend.apisix_gateway_url }} 
+      admin_api_key: {{ .Values.backend.apisix_apikey }}
+      key_path: {{ .Values.backend.apisix_keypath }}

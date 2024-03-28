@@ -24,8 +24,8 @@ spec:
         - containerPort: {{ .Values.backend.debugport}}
         volumeMounts:
         - name: config
-          mountPath: "/config/application-ewc-dev.yaml"
-          subPath: "application-ewc-dev.yaml"
+          mountPath: "/code/config.yaml"
+          subPath: "config.yaml"
       volumes:
       - name: config
         configMap: 

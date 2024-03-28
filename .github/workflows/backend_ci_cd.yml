@@ -24,18 +24,41 @@ jobs:
         - name: Start external services stack
           run: docker compose -f docker-compose.yml up -d --wait
         
-        - name: Setup Vault
-          run: docker exec vault_test sh /vault/config/setup.sh
-        
-        - name: Set up Java environment
-          uses: actions/setup-java@v4
+        - name: Install Poetry
+          run: curl -sSL https://install.python-poetry.org | python3 -
+
+        - name: Set up Python environment
+          uses: actions/setup-python@v5
           with:
-            java-version: '17'
-            distribution: 'adopt'
-            cache: 'maven'
+            python-version: '3.12'
+            cache: 'poetry'
+          
+        - name: Install dependencies
+          run: poetry install
+          working-directory: ./backend
+
+        - name: Run format Black
+          run: poetry run black app/ --check
+          working-directory: ./backend
+
+        - name: Run Pylint
+          run: poetry run pylint app/
+          working-directory: ./backend
+        
+        - name: Run Mypy
+          run: poetry run mypy app/
+          working-directory: ./backend
+
+        - name: Run Bandit
+          run: poetry run bandit -r app
+          working-directory: ./backend
+
+        - name: Generate app configuration file for tests
+          run: ./generate_config-yaml.sh > ./config.yaml
+          working-directory: ./backend
 
         - name: Run tests
-          run: mvn test
+          run: poetry run pytest
           working-directory: ./backend
 
   build:

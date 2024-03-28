@@ -43,7 +43,7 @@ role name: ADMIN
 ```
 8. add ADMIN role to default value for testing purposes
 ```sh
-navigate REAL ROLES -> default-roles-test
+navigate REALM ROLES -> default-roles-test
 Assign role -> ADMIN
 ```
 9. Thats it now you can log in from frontend using created users info
